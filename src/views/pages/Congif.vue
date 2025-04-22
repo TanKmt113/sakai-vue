@@ -61,6 +61,88 @@ const Save = () => {
       console.log(err);
     });
 };
+
+const exportJS = () => {
+  const jsContent = `
+    let liveChatBaseUrl   = document.location.protocol + '//' + 'livechat.fox.ai/v36/src'
+    let LiveChatSocketUrl = 'livechat.fox.ai:443'
+    let FoxaiAppCode        = ''
+    let FoxaiAppName        = 'FOXAI'
+    // Define custom styles
+    let CustomStyles = {
+        // header
+        headerBackground: '#${themeSettings.value.header.background.color}',
+        headerTextColor: '#${themeSettings.value.header.textColor}',
+        headerLogoEnable: ${themeSettings.value.header.logo.enabled},
+        headerLogoLink: '${themeSettings.value.header.logo.link}',
+        headerText: '${themeSettings.value.header.textHeader}',
+        // main
+        primaryColor: '#${themeSettings.value.body.primary.background}',
+        secondaryColor: '#D8D8D8FF',
+        primaryTextColor: '#${themeSettings.value.body.primary.text}',
+        secondaryTextColor: '#1F1F1FFF',
+        buttonColor: '#0C5488',
+        buttonTextColor: '#ffffffff',
+        bodyBackgroundEnable: true,
+        bodyBackgroundLink: 'https://chatbot-tools.FOXAI.ai/livechat-builder/img/theme/bank/body.png',
+        avatarBot: 'https://chatbot-tools.fox.ai/livechat-builder/img/theme/bank/bot.svg',
+        sendMessagePlaceholder: 'Enter your message here',
+        // float button
+        floatButtonLogo: '${themeSettings.value.header.logo.link}',
+        floatButtonTooltip: 'Trợ lý FOXAI có thể giúp gì cho bạn?',
+        floatButtonTooltipEnable: true,
+        // start screen
+        customerLogo: 'https://chatbot-tools.fox.ai/livechat-builder/img/theme/bank/logo.svg',
+        customerWelcomeText: 'Please input your name',
+        customerButtonText: 'Start',
+        prefixEnable: false,
+        prefixType: 'radio',
+        prefixOptions: ["Anh","Chị"],
+        prefixPlaceholder: 'Danh xưng',
+        // custom css
+        css: ''
+    }
+    // Get bot code from url if FoxaiAppCode is empty
+    if (!FoxaiAppCode) {
+        let appCodeFromHash = window.location.hash.substr(1)
+        if (appCodeFromHash.length === 32) {
+            FoxaiAppCode = appCodeFromHash
+        }
+    }
+    // Set Configs
+    let FoxaiLiveChatConfigs = {
+        appName: FoxaiAppName,
+        appCode: FoxaiAppCode,
+        themes : '',
+        styles : CustomStyles
+    }
+    // Append Script
+    let FoxaiLiveChatScript  = document.createElement('script')
+    FoxaiLiveChatScript.id   = 'fox_ai_livechat_script'
+    FoxaiLiveChatScript.src  = 'http://ai.foxai.com.vn:8888/foxai-livechat.js'
+    document.body.appendChild(FoxaiLiveChatScript)
+    // Append Stylesheet
+    let FoxaiLiveChatStyles  = document.createElement('link')
+    FoxaiLiveChatStyles.id   = 'fox_ai_livechat_script'
+    FoxaiLiveChatStyles.rel  = 'stylesheet'
+    FoxaiLiveChatStyles.href ='http://ai.foxai.com.vn:8888/foxai-livechat.css'
+    document.body.appendChild(FoxaiLiveChatStyles)
+    // Init
+    FoxaiLiveChatScript.onload = function () {
+        fox_ai_render_chatbox(FoxaiLiveChatConfigs, liveChatBaseUrl, LiveChatSocketUrl)
+    }
+  `.trim();
+
+  const blob = new Blob([jsContent], { type: "application/javascript" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "foxai-livechat-config.js";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
 </script>
 <template>
   <div class="card">
@@ -192,6 +274,12 @@ const Save = () => {
                   <div class="mt-5 flex justify-end gap-3">
                     <Button label="Hủy" icon="pi pi-times" severity="secondary"></Button>
                     <Button label="Lưu" icon="pi pi-save" @click="Save()"></Button>
+                    <Button
+                      label="Xuất JS"
+                      icon="pi pi-file-export"
+                      severity="info"
+                      @click="exportJS()"
+                    ></Button>
                   </div>
                 </template>
               </Card>
