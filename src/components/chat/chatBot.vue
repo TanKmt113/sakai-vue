@@ -9,17 +9,38 @@
             v-for="item in messages"
             :key="item"
           >
-            <div
-              v-html="item.content"
-              class="font-normal text-xl"
-              :class="{ 'bg-slate-200 p-3 rounded-3xl w-fit': item.role === 'user' }"
-            ></div>
-            <div class="mt-3">
-              <i
-                class="pi pi-clone cursor-pointer"
-                @click="copyToClipboard(htmlToText(item.content))"
-                v-tooltip.bottom="'Copy'"
-              ></i>
+            <div class="flex gap-1">
+              <div class="flex items-center" v-if="item.role != 'user'">
+                <Avatar
+                  v-if="themeSettings.header.logo.enabled"
+                  :image="themeSettings.header.logo.link"
+                  class="mr-2"
+                  size="large"
+                  shape="circle"
+                />
+                <Avatar
+                  icon="pi pi-user"
+                  class="mr-2"
+                  size="large"
+                  style="background-color: #ece9fc; color: #2a1261"
+                  shape="circle"
+                  v-else
+                />
+              </div>
+              <div
+                v-html="item.content"
+                class="font-normal text-xl p-3 rounded-3xl w-fit"
+                :style="`background-color:#${themeSettings.body.primary.background};color:#${themeSettings.body.primary.text}`"
+              ></div>
+              <div class="flex items-center" v-if="item.role === 'user'">
+                <Avatar
+                  icon="pi pi-user"
+                  class="ml-2"
+                  size="large"
+                  style="background-color: #ece9fc; color: #2a1261"
+                  shape="circle"
+                />
+              </div>
             </div>
           </div>
           <ProgressSpinner
@@ -101,7 +122,8 @@
 </template>
 <script setup>
 import http from "@/config/http";
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, onBeforeMount } from "vue";
+import axios from "axios";
 
 const Error = ref();
 const messages = ref([]);
@@ -109,6 +131,23 @@ const message = ref();
 const loading = ref(false);
 const props = defineProps(["name"]);
 const name = ref("");
+const themeSettings = ref({});
+
+onBeforeMount(() => {
+  getCongif();
+});
+
+const getCongif = () => {
+  http
+    .get("config")
+    .then((res) => {
+      themeSettings.value = JSON.parse(res.data.metadata.config);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 watchEffect(() => {
   if (props.name) {
     name.value = props.name;
@@ -140,8 +179,8 @@ const submitChat = async (isCancel = false) => {
   scrollToBottom();
   try {
     loading.value = true;
-    const response = await http.post(
-      "chat",
+    const response = await axios.post(
+      themeSettings.value.api,
       {
         query: messages.value[messages.value.length - 1]?.content || "",
       }

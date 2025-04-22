@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onBeforeMount } from "vue";
+import http from "@/config/http";
 
 const tabs = ref([{ title: "Giao diện", content: "Tab 1 Content", value: "0" }]);
 
@@ -33,6 +34,33 @@ const themeSettings = ref({
     },
   },
 });
+
+onBeforeMount(() => {
+  getCongif();
+});
+
+const getCongif = () => {
+  http
+    .get("config")
+    .then((res) => {
+      themeSettings.value = JSON.parse(res.data.metadata.config);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+const Save = () => {
+  http
+    .post("config", { config: JSON.stringify(themeSettings.value) })
+    .then((res) => {
+      alert("Cập nhật thành công");
+      themeSettings.value = JSON.parse(res.data.metadata.config);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 </script>
 <template>
   <div class="card">
@@ -75,8 +103,6 @@ const themeSettings = ref({
                           <span>Background:</span>
                           <div class="flex flex-col gap-3 w-full">
                             <div class="flex items-center gap-2">
-                              <label for="ingredient1"> Solid </label>
-                              {{ themeSettings.header.background.color }}
                               <ColorPicker
                                 v-model="themeSettings.header.background.color"
                                 class="border-2"
@@ -152,8 +178,20 @@ const themeSettings = ref({
                             </div>
                           </div>
                         </div>
+                        <div class="flex gap-3">
+                          <span>API chatbot:</span>
+                          <InputText
+                            class="w-full"
+                            placeholder="Nhập api của bạn"
+                            v-model="themeSettings.api"
+                          />
+                        </div>
                       </div>
                     </div>
+                  </div>
+                  <div class="mt-5 flex justify-end gap-3">
+                    <Button label="Hủy" icon="pi pi-times" severity="secondary"></Button>
+                    <Button label="Lưu" icon="pi pi-save" @click="Save()"></Button>
                   </div>
                 </template>
               </Card>

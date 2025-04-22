@@ -7,8 +7,8 @@ const model = ref([
   {
     label: "Home",
     items: [
-      { label: "Chat bot", icon: "pi pi-fw pi-home", to: "/" },
-      { label: "Thiết lập", icon: "pi pi-setting", to: "/congif" },
+      { label: "Chat bot", to: "/" },
+      { label: "Thiết lập", to: "/congif" },
     ],
   },
 ]);
