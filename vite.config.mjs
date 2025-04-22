@@ -4,6 +4,7 @@ import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 import vue from '@vitejs/plugin-vue';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
+import VitePluginVueDevTools from 'vite-plugin-vue-devtools';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,7 +12,7 @@ export default defineConfig({
         noDiscovery: true
     },
     plugins: [
-        vue(),
+        vue(),VitePluginVueDevTools(),
         Components({
             resolvers: [PrimeVueResolver()]
         })

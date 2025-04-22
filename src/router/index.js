@@ -1,30 +1,31 @@
-import AppLayout from '@/layout/AppLayout.vue';
+import AppLayoutVue from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
-            path: '/',
-            component: AppLayout,
+            path: '/admin',
+            component: AppLayoutVue,
             children: [
                 {
-                    path: '/',
-                    name: 'dashboard',
-                    component: () => import('@/views/Dashboard.vue')
+                    path: '/admin/chroma-db',
+                    name: 'chromaDD',
+                    component: () => import('@/views/pages/Admin/ChromaDB/index.vue')
                 },
                 {
-                    path: '/pages/empty',
-                    name: 'empty',
-                    component: () => import('@/views/pages/Empty.vue')
+                    path: '/congif',
+                    name: 'congif',
+                    component: () => import('@/views/pages/Congif.vue')
                 },
             ]
         },
         {
-            path: '/landing',
+            path: '/',
             name: 'landing',
             component: () => import('@/views/pages/Landing.vue')
         },
+        
         {
             path: '/pages/notfound',
             name: 'notfound',
